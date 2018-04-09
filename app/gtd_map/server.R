@@ -112,95 +112,9 @@ function(input, output, session) {
       addProviderTiles(providers$Esri.NatGeoWorldMap) %>%
       setView(lat = 35.13, lng = -71.3394481, zoom = 3)
   })
-  
-  # mapselection <- reactive((
-  #  input$select_map
-  # ))
-  
-  #data_subset <- "total_attacks_plus_location_total"
-  #data_subset <- reactive((
-  #if (input$select_map == "TotalSuccessfulAttacks") {
-  #  data_subset <- "total_attacks_plus_location_total"
-  #} else if (input$select_map == "TotalSuccessfulAttacks_Decade") {
-  #  data_subset <- "get_totals_by_decade"
-  #} else if (input$select_map == "TotalTelecomAndUtilityAttacks") {
-  #  data_subset <- "get_totals_telecom_and_utility"  
-  #} else {
-  #  data_subset <- "get_totals_property_damage"
-  #}
-  #))
-  
-  #   hist(zipsInBounds()$centile,
-  # A reactive expression that returns the set of zips that are
-  # in bounds right now
-  #zipsInBounds <- reactive({
-  # if (is.null(input$map_bounds))
-  #  return(gtd_tbl[FALSE,])
-  #  bounds <- input$map_bounds
-  #  latRng <- range(bounds$north, bounds$south)
-  #  lngRng <- range(bounds$east, bounds$west)
-  #  
-  #  subset(gtd_tbl,
-  #         latitude >= latRng[1] & latitude <= latRng[2] &
-  #           longitude >= lngRng[1] & longitude <= lngRng[2])
-  #})
-  
-  # Precalculate the breaks we'll need for the two histograms
-  # centileBreaks <- hist(plot = FALSE, allzips$centile, breaks = 20)$breaks
-  
-  # output$histCentile <- renderPlot({
-  #   # If no zipcodes are in view, don't plot
-  #   if (nrow(zipsInBounds()) == 0)
-  #     return(NULL)
-  #   
-  #        breaks = centileBreaks,
-  #        main = "SuperZIP score (visible zips)",
-  #        xlab = "Percentile",
-  #        xlim = range(allzips$centile),
-  #        col = '#00DD00',
-  #        border = 'white')
-  # })
-  # 
-  # output$scatterCollegeIncome <- renderPlot({
-  #   # If no zipcodes are in view, don't plot
-  #   if (nrow(zipsInBounds()) == 0)
-  #     return(NULL)
-  #   
-  #   print(xyplot(income ~ college, data = zipsInBounds(), xlim = range(allzips$college), ylim = range(allzips$income)))
-  # })
-  
-  # This observer is responsible for maintaining the circles and legend,
-  # according to the variables the user has chosen to map to color and size.
+ 
   observe({
-    #data_subset <- "total_attacks_plus_location_total"
-    #data_subset <-
-    #  if (input$select_map == "TotalSuccessfulAttacks") {
-    #  data_subset <- "total_attacks_plus_location_total"
-    #} else if (input$select_map == "TotalSuccessfulAttacks_Decade") {
-    #  data_subset <- "get_totals_by_decade"
-    #} else if (input$select_map == "TotalTelecomAndUtilityAttacks") {
-    #  data_subset <- "get_totals_telecom_and_utility"  
-    #} else {
-    #  data_subset <- "get_totals_property_damage"
-    #}
-    
-    
-  #  colorBy <- input$color
-  #  sizeBy <- input$size
-  #
-  #
-  # colorData <- gtd_tbl %>%
-  #    select(colorBy) %>%
-  #    collect()
-    
-  #  pal <- brewer_pal("qual")(8)
-
-  #  sizeData <- gtd_tbl %>%
-  #    select(sizeBy) %>%
-  #    collect()
-    
-  #  radius <- sizeData / max(sizeData) * 30000
-
+  
       if (input$select_map == "LocationTotal") {
         leafletProxy("map", data = total_attacks_plus_location_total) %>%
           clearShapes() %>%
@@ -221,7 +135,7 @@ function(input, output, session) {
                                    "</br>","Estimated Damage: ",get_totals_property_damage$PropertyDamageText),
             clusterOptions = markerClusterOptions()
           )
-      } else {
+      } else if(input$select_map == "TotalSuccessfulIncidents_Decade") {
         leafletProxy("map", data = get_totals_by_decade[get_totals_by_decade$Decade==input$DecadeSelection,]) %>%
           clearShapes() %>%
           clearHeatmap() %>%
@@ -229,39 +143,14 @@ function(input, output, session) {
           clearMarkerClusters() %>%
           addHeatmap(~longitude, ~latitude, intensity = ~Decade,
                      blur = 20, max = 0.05, radius = 15)
+      } else {
+        leafletProxy("map") %>%
+          clearShapes() %>%
+          clearHeatmap() %>%
+          clearMarkers() %>%
+          clearMarkerClusters()
       }
 })
-
-  
-  # Show a popup at the given location. Need to define a custom popup for
-  # when someone clicks a particular event. Some high level info
-  #showZipcodePopup <- function(zipcode, lat, lng) {
-  #  selectedEvent <- gtd_tbl %>%
-  #    filter(eventid = eventid)
-  #  content <- as.character(tagList(
-  #    tags$h4("Score:", as.integer(selectedZip$centile)),
-  #    tags$strong(HTML(sprintf("%s, %s %s",
-  #                             selectedZip$city.x, selectedZip$state.x, selectedZip$zipcode
-  #    ))), tags$br(),
-  #    sprintf("Median household income: %s", dollar(selectedZip$income * 1000)), tags$br(),
-  #    sprintf("Percent of adults with BA: %s%%", as.integer(selectedZip$college)), tags$br(),
-  #    sprintf("Adult population: %s", selectedZip$adultpop)
-  #  ))
-  #  leafletProxy("map") %>% addPopups(lng, lat, content, layerId = zipcode)
-  #}
-  
-  # When map is clicked, show a popup with city info
- # observe({
-  #  leafletProxy("map") %>% clearPopups()
-  #  event <- input$map_shape_click
-  #  if (is.null(event))
-  #    return()
-  #  
-  #  isolate({
-  #    showZipcodePopup(event$id, event$lat, event$lng)
-  #  })
-  # })
-  
   
   ## Data Explorer ###########################################
   

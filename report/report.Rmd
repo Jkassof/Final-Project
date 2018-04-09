@@ -2,7 +2,7 @@
 title: "What the SAAS?"
 author: "Jordan Kassof and Jeff Weltman"
 date: "4/8/2018"
-output: html_document
+output: pdf_document
 ---
 
 ## Introduction
@@ -17,7 +17,7 @@ All that being said, what is a SAAS? It's such a buzzword today, but do most reg
 
 While there are many cloud service providers, Amazon has by far the most services available on their platform. We will take advantage of just a few of those services in this implementation. The application itself will be hosted leveraging the Elastic Compute (EC2) service and the data the application uses to run will be held in a MySQL database on the Relational Database Service (RDS). In order to accomodate a large user load, we will use a load balancer to distribute incoming traffic across multiple instances of the described EC2/RDS infrastructure. Below is a diagram displaying the envisioned configuration.
 
-<center><img src='img/diag.png'</center>
+![Configuration Diagram](./img/diag.png)
 
 
 ### Data
@@ -28,7 +28,21 @@ We opted to filter the data to only consider those incidents which were both con
 
 ### Application
 
-Some comments about R/Shiny/Leaflet/mapping applications. 
+**Shiny** is an R package for building interactive web apps from within RStudio. These apps can be embedded in R Markdown documents, hosted as standalone apps on a webpage, or built as dashboards. In addition, they can be extended with JavaScript, CSS themes, and htmlwidgets. Many R packages are developed both for local use and integration with Shiny for interactivity. As the GTD data subset we used contained latitude and longitude coordinates, a mapping package was a logical and appropriate choice. 
+
+We chose **Leaflet**, an R wrapper for the widely-used JavaScript library of the same name. Leaflet allows for highly-customizable map widgets with parameters for the widget itself and the user interface. Some of the many functions of Leaflet include chloropleths, GeoJSON and TopJSON maps, multi-layered maps, projections, and - with the addition of the **leaflet.extras** package - heatmaps. Many of these functions support markers and circle markers as ways to provide both interactivity and a richer source of detailed information to the end user. Additionally, through the use of database connecting R packages, such as DBI, Leaflet can visualize data hosted externally, such as in the present example of an AWS-hosted RDS instance.
+
+For the present project, we opted to include three separate Leaflet visualizations in our Shiny web app. Upon launching the app, the end user is presented with a world map devoid of any markers or data. The *Please select a dataset* dropdown menu presents three choices:
+
+1. *Total Successful Incidents* - a heatmap of all 113,000 successful and confirmed terrorist incidents, grouped by latitude and longitude coordinates.
+2. *Total Incidents By Decade* - a heatmap of successful and confirmed terrorist incidents, grouped by both decade and coordinates. 
+  + Selecting this dataset shows an otherwise-hidden secondary dropdown menu for decade selection.
+  + By default, the heatmap will show incidents form the 1970s.
+3. *Incidents With Excessive Property Damage* - a map of successful and confirmed terrorist incidents which resulted in at least $1,000,000 of property damage.
+  + These incidents are identified via clustered map markers. Upon mouseover, the geographical bounds of the clustered region is indicated.
+  + Clicking on an individual marker displays a popup which provides information regarding the incident, perpetrator, and estimated damage.
+
+These three visualizations demonstrate some of the capabilities offered through Shiny and Leaflet avaiable in a SAAS offering. Locally and remotely-hosted data can be transformed in R and then elegantly displayed to provide interactive and actionable visualization utilizing Shiny and Leaflet.
 
 ## Results
 
