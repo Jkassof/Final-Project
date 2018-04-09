@@ -10,13 +10,13 @@ confirmed_db <- tbl(get_gtddb,"events")
 confirmed_attacks <- confirmed_db %>%
   select(eventid,iyear,imonth,iday,country_txt,provstate,city,latitude,longitude,attacktype1_txt,targtype1,
          targtype1_txt,claimed,property,propextent,propvalue,doubtterr,success,gname) %>%
-  rename(Year=iyear,Country=country_txt) %>%
+  #rename(Year=iyear,Country=country_txt) %>%
   filter(doubtterr==0 & success==1) %>%
   filter(!is.na(latitude)) %>%
   select(-doubtterr,-success)
 
 total_attacks_by_country <- confirmed_attacks %>%
-  group_by(Country) %>%
+  group_by(country_txt) %>%
   tally() %>%
   rename(TotalSuccessfulAttacks = n)
 
@@ -27,16 +27,16 @@ total_attacks_by_location <- confirmed_attacks %>%
   rename(LocationTotal = n)
 
 total_attacks_by_decade <- confirmed_attacks %>%
-  select(Year,Country,latitude,longitude) %>%
+  select(iyear,country_txt,latitude,longitude) %>%
   filter(!is.na(latitude)) %>%
   mutate(Decade = case_when(
-    Year >= 1970 & Year < 1980 ~ "1970s",
-    Year >= 1980 & Year < 1990 ~ "1980s",
-    Year >= 1990 & Year < 2000 ~ "1990s",
-    Year >= 2000 & Year < 2010 ~ "2000s",
-    Year >= 2010 ~ "2010s"
+    iyear >= 1970 & iyear < 1980 ~ "1970s",
+    iyear >= 1980 & iyear < 1990 ~ "1980s",
+    iyear >= 1990 & iyear < 2000 ~ "1990s",
+    iyear >= 2000 & iyear < 2010 ~ "2000s",
+    iyear >= 2010 ~ "2010s"
   )) %>%
-  group_by(Decade,Country,latitude,longitude) %>%
+  group_by(Decade,country_txt,latitude,longitude) %>%
   tally() %>%
   rename(TotalSuccessfulAttacks_Decade = n)
 
@@ -52,38 +52,42 @@ total_attacks_by_decade <- confirmed_attacks %>%
 #  rename(TotalTelecomAndUtilityAttacks = n)
 
 total_property_damage <- confirmed_attacks %>%
-  select(eventid,Year,imonth,iday,attacktype1_txt,property,propextent,propvalue,latitude,longitude,gname) %>%
-  rename(Month = imonth, Day = iday, PropertyDamage = propvalue, AttackType = attacktype1_txt, PerpetratorGroup = gname) %>%
-  filter(property=="1" & propextent %in% c("1","2")) %>%
-  mutate(
-    PropertyDamage = if_else(PropertyDamage == "", NA_character_, PropertyDamage)
-  ) %>%
-  filter(!is.na(PropertyDamage)) %>%
-  filter(!is.na(latitude)) %>%
-  mutate(
-    AttackDate = case_when(
-      Day == "0" ~ paste(Year,"-", Month, sep=""),
-      Day != "0" ~ paste(Year, "-", Month, "-", Day, sep="")),
-    PropertyDamageText = case_when(
-      is.na(PropertyDamage) && propextent == "1" ~ "> $1000000000",
-      is.na(PropertyDamage) && propextent == "2" ~ "Between $1000000 and $100000000",
-      PropertyDamage == "-99" && propextent == "1" ~ "> $1000000000",
-      PropertyDamage == "-99" && propextent == "2" ~ "Between $1000000 and $100000000",
-      TRUE ~ paste("$",PropertyDamage,sep="")
-    )
-  )
-  
+  select(eventid,iyear,imonth,iday,attacktype1_txt,property,propextent,propvalue,latitude,longitude,gname) %>%
+  #rename(Month = imonth, Day = iday, PropertyDamage = propvalue, AttackType = attacktype1_txt, PerpetratorGroup = gname) %>%
+  filter(property=="1" & propextent %in% c("1","2"))
+
 get_totals <- collect(confirmed_attacks)
 get_totals_by_country <- collect(total_attacks_by_country)
 get_totals_by_decade <- collect(total_attacks_by_decade)
 # get_totals_telecom_and_utility <- collect(total_telecom_and_utility_attacks)
 get_totals_property_damage <- collect(total_property_damage)
-get_totals_property_radius <- get_totals_property_damage %>%
+get_totals_property_damage_rev$propextent <- as.character(get_totals_property_damage_rev$propextent)
+get_totals_property_damage_rev$propvalue <- as.integer64(get_totals_property_damage_rev$propextent)
+get_totals_property_damage_rev$propextent <- trimws(get_totals_property_damage_rev$propextent)
+get_totals_property_damage_rev$PropertyDamageText <- trimws(get_totals_property_damage_rev$PropertyDamageText)
+get_totals_property_damage_rev <- get_totals_property_damage %>%
+  #mutate(
+    #PropertyDamage = if_else(propvalue == "", NA_character_, as.character(propvalue))
+  #) %>%
+  filter(!is.na(propvalue)) %>%
+  filter(!is.na(latitude)) %>%
+  mutate(
+    AttackDate = case_when(
+      iday == "0" ~ paste(iyear,"-", imonth, sep=""),
+      iday != "0" ~ paste(iyear, "-", imonth, "-", iday, sep="")),
+    PropertyDamageText = case_when(
+      as.character(as.integer64(propvalue)) == "-99" & as.character(as.integer(propextent)) == "1" ~ "> $1000000000",
+      as.character(as.integer64(propvalue)) == "-99" & as.character(as.integer(propextent)) == "2" ~ "Between $1000000 and $100000000",
+      TRUE ~ paste("$",as.character(as.integer64(propvalue)),sep="")
+    )
+  )
+
+get_totals_property_radius <- get_totals_property_damage_rev %>%
   mutate(
     PropertyDamageRadius = case_when(
-      PropertyDamage <= "0" ~ "1",
-      propextent == "1" ~ as.character(as.numeric((PropertyDamage) / 1000000)),
-      propextent == "2" ~ as.character(as.numeric((PropertyDamage) / 1000))
+      propvalue <= "0" ~ "1",
+      propextent == "1" ~ as.character(as.numeric((propvalue) / 1000000)),
+      propextent == "2" ~ as.character(as.numeric((propvalue) / 1000))
     )
   )
 get_totals_by_location <- collect(total_attacks_by_location)
@@ -123,16 +127,16 @@ function(input, output, session) {
           clearMarkerClusters() %>%
           addHeatmap(~longitude, ~latitude, intensity = ~LocationTotal,
                      blur = 20, max = 0.05, radius = 15)
-      } else if(input$select_map == "PropertyDamage") {
-        leafletProxy("map", data = get_totals_property_damage) %>%
+      } else if(input$select_map == "PropertyDamageText") {
+        leafletProxy("map", data = get_totals_property_damage_rev) %>%
           clearShapes() %>%
           clearHeatmap() %>%
           clearMarkers() %>%
           clearMarkerClusters() %>%
           addMarkers(~longitude, ~latitude, layerId = ~eventid, 
-                     popup = paste("<b>",get_totals_property_damage$AttackType,"</b>",
-                                   "</br>","Attack Date: ",get_totals_property_damage$AttackDate,"</br>","Perpetrator/Group: ",get_totals_property_damage$PerpetratorGroup,
-                                   "</br>","Estimated Damage: ",get_totals_property_damage$PropertyDamageText),
+                     popup = paste("<b>",get_totals_property_damage_rev$attacktype1_txt,"</b>",
+                                   "</br>","Incident Date: ",get_totals_property_damage_rev$AttackDate,"</br>","Perpetrator/Group: ",get_totals_property_damage_rev$gname,
+                                   "</br>","Estimated Damage: ",get_totals_property_damage_rev$PropertyDamageText),
             clusterOptions = markerClusterOptions()
           )
       } else if(input$select_map == "TotalSuccessfulIncidents_Decade") {
