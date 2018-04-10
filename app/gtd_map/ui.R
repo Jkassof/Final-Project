@@ -4,7 +4,8 @@ vars <- c(
   "(Please Select a Dataset)" = "NoneSelected",
   "Total Successful Incidents" = "LocationTotal",
   "Total Incidents By Decade" = "TotalSuccessfulIncidents_Decade",
-  "Incidents With Extensive Property Damage" = "PropertyDamageText"
+  "Incidents With Extensive Property Damage" = "PropertyDamageText",
+  "Custom Mapping" = "CustomMapping"
 )
 
 decades <- c(
@@ -13,6 +14,15 @@ decades <- c(
   "1990s" = "1990s",
   "2000s" = "2000s",
   "2010s" = "2010s"
+)
+
+sizeOpts <- c(
+  "Property Damage ($)" = "propvalue"
+)
+
+colorOpts <- c(
+  "Attack Type" = "attacktype1_txt",
+  "Target Type" = "targtype1"
 )
 
 navbarPage("Global Terrorism DB", id="nav",
@@ -34,7 +44,11 @@ navbarPage("Global Terrorism DB", id="nav",
                       selectInput("select_map", "Please select the data set:", vars, selected="NoneSelected"),
                       conditionalPanel("input.select_map == 'TotalSuccessfulIncidents_Decade'",
                                        # Only prompt for decade when selecting decade data
-                                       selectInput("DecadeSelection", "Please select a decade:", decades, selected="1970s"))
+                                       selectInput("DecadeSelection", "Please select a decade:", decades, selected="1970s")
+                                       ),
+                      conditionalPanel("input.select_map == 'CustomMapping'",
+                                       selectInput("colorBy", "Select Color Variable", colorOpts),
+                                       selectInput("sizeBy", "Select Sizing Variable", sizeOpts))
                       )
     )
   )

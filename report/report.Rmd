@@ -17,7 +17,7 @@ All that being said, what is a SAAS? It's such a buzzword today, but do most reg
 
 While there are many cloud service providers, Amazon has by far the most services available on their platform. We will take advantage of just a few of those services in this implementation. The application itself will be hosted leveraging the Elastic Compute (EC2) service and the data the application uses to run will be held in a MySQL database on the Relational Database Service (RDS). In order to accomodate a large user load, we will use a load balancer to distribute incoming traffic across multiple instances of the described EC2/RDS infrastructure. Below is a diagram displaying the envisioned configuration.
 
-![Configuration Diagram](./img/diag.png)
+![](./img/diag.png)
 
 
 ### Data

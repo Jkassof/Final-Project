@@ -41,31 +41,15 @@ total_attacks_by_decade <- confirmed_attacks %>%
   tally() %>%
   rename(TotalSuccessfulAttacks_Decade = n)
 
-# total_telecom_and_utility_attacks <- confirmed_attacks %>%
-#  select(Year,imonth,iday,targtype1,targtype1_txt,gname,latitude,longitude,attacktype1_txt) %>%
-#  rename(Month = imonth, Day = iday, TargetType=targtype1_txt, PerpetratorGroup = gname, AttackType = attacktype1_txt) %>%
-#  filter(!is.na(latitude) & targtype1 %in% c("16","21")) %>%
-#  mutate(AttackDate = case_when(
-#    Day == "0" ~ paste(Year,"-", Month, sep=""),
-#    Day != "0" ~ paste(Year, "-", Month, "-", Day, sep="")
-#  )) %>%
-#  tally() %>%
-#  rename(TotalTelecomAndUtilityAttacks = n)
-
 total_property_damage <- confirmed_attacks %>%
   select(eventid,iyear,imonth,iday,attacktype1_txt,property,propextent,propvalue,latitude,longitude,gname) %>%
-  #rename(Month = imonth, Day = iday, PropertyDamage = propvalue, AttackType = attacktype1_txt, PerpetratorGroup = gname) %>%
   filter(property=="1" & propextent %in% c("1","2"))
 
 get_totals <- collect(confirmed_attacks)
 get_totals_by_country <- collect(total_attacks_by_country)
 get_totals_by_decade <- collect(total_attacks_by_decade)
-# get_totals_telecom_and_utility <- collect(total_telecom_and_utility_attacks)
 get_totals_property_damage <- collect(total_property_damage)
 get_totals_property_damage_rev <- get_totals_property_damage %>%
-  #mutate(
-    #PropertyDamage = if_else(propvalue == "", NA_character_, as.character(propvalue))
-  #) %>%
   filter(!is.na(propvalue)) %>%
   filter(!is.na(latitude)) %>%
   mutate(
@@ -89,23 +73,11 @@ get_totals_property_radius <- get_totals_property_damage_rev %>%
   )
 get_totals_by_location <- collect(total_attacks_by_location)
 
-# total_attacks_plus_cntry_total <- merge(x=get_totals,y=get_totals_by_country, by="Country", all.x=TRUE)
 total_attacks_plus_location_total <- merge(x=get_totals,y=get_totals_by_location, by=c("latitude","longitude"), all.x=TRUE)
-# total_attacks_plus_location_decade <- merge(x=get_totals_by_decade,y=get_totals_by_location, by="Country")
 
 function(input, output, session) {
   
   ## Interactive Map ###########################################
-  
-  # Define color palette for attacks
-  
- # pal <- colorFactor(
-#    #palette = 'Dark2',
-#    palette = c('red','blue','green','purple','orange','pink','yellow','brown','gray'),
-#    domain = get_totals_property_damage$AttackType
-#  )
-
-#  prop_pal <- colorFactor(viridis(7), get_totals_property_radius$AttackType)
     
   # Create the map
   output$map <- renderLeaflet({
@@ -144,6 +116,23 @@ function(input, output, session) {
           clearMarkerClusters() %>%
           addHeatmap(~longitude, ~latitude, intensity = ~Decade,
                      blur = 20, max = 0.05, radius = 15)
+      #} else if(input$select_map == "CustomMapping") {
+      #   colorBy <- input$colorBy
+      #   colorData <- unique(get_totals[[colorBy]])
+      #   sizeBy <- input$sizeBy
+      #   radius <- get_totals[[sizeBy]] / (max(get_totals[[sizeBy]], na.rm = TRUE)*.0000005)
+      #   
+      #   #leaflet() %>%
+      #    # addProviderTiles(providers$Esri.NatGeoWorldMap) %>%
+      #   #  setView(lat = 35.13, lng = -71.3394481, zoom = 3) %>%
+      #   leafletProxy("map", data = get_totals) %>%
+      #     clearShapes() %>%
+      #     clearHeatmap() %>%
+      #     clearMarkers() %>%
+      #     addCircles(~longitude, ~latitude, radius=radius, layerId=NULL,
+      #                stroke=FALSE, fillOpacity=0.4, fillColor=brewer.pal(length(colorData), "Paired")) # %>%
+          #addLegend("bottomleft", pal=brewer.pal(length(colorData)), values=colorData, title=colorBy,
+           #         layerId="colorLegend")
       } else {
         leafletProxy("map") %>%
           clearShapes() %>%
@@ -151,7 +140,24 @@ function(input, output, session) {
           clearMarkers() %>%
           clearMarkerClusters()
       }
-})
+    })
+  
+  eventsInBounds <- reactive({
+    bounds <- input$map_bounds
+    latRng <- range(bounds$north, bounds$south)
+    lngRng <- range(bounds$east, bounds$west)
+    
+    confirmed_attacks %>%
+      filter(
+        latitude >= latRng[1] & latitude <= latRng[2] &
+        longitude >= lngRng[1] & longitude <= lngRng[2]
+      )
+  })
+  
+  observe({
+    
+    
+  })
   
   ## Data Explorer ###########################################
   
