@@ -35,7 +35,7 @@ if (window.hljs) {
   hljs.configure({languages: []});
   hljs.initHighlightingOnLoad();
   if (document.readyState && document.readyState === "complete") {
-    window.setTimeout(function() { hljs.initHighlightingOnLoad(); }, 0);
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
   }
 }
 </script>
@@ -181,7 +181,8 @@ $(document).ready(function () {
 </div>
 <div id="further-development" class="section level2">
 <h2>Further development</h2>
-<p>Ideas about further development like integrating authentication which would allow you to give different clients access to their own data because you know who is logged in. Some further ideas for app development.</p>
+<p>Due to the rich development history and active user community, any R-based application has an innumerable number of possibilities when it comes to future development. We have included the following three ways which are particularly relevant for this particular application.</p>
+<p>First, with the capabilities of surfacing and visualizing potentially sensitive data, one opportunity for further development would be to implement authentication. RStudio’s Shiny Pro Server includes out-of-the-box support for Goggle authentication, PAM (Pluggable Authentication Module), Kerberos, and LDAP. One or more of these options should integrate with any client’s existing authentication infrastructure and would allow for clients to then authenticate in order to access data which is defined as permitted and appropriate. Secondly, since R supports a wide variety of endpoint connectors, this provides robust extinsibility in that data from other client systems can be ingested and accessed for highly customizable reports and analytics. This includes additional database environments, flat files, and third-party services. Lastly, client systems could be configured to automatically populate available data points in a templatized fashion. This could provide a way to facilitate self-service delivery of reporting and visualization.</p>
 </div>
 
 
