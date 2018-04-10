@@ -5,6 +5,7 @@ library(RColorBrewer)
 library(scales)
 library(lattice)
 library(dplyr)
+library(bit64)
 
 confirmed_db <- tbl(get_gtddb,"events")
 confirmed_attacks <- confirmed_db %>%
@@ -61,10 +62,6 @@ get_totals_by_country <- collect(total_attacks_by_country)
 get_totals_by_decade <- collect(total_attacks_by_decade)
 # get_totals_telecom_and_utility <- collect(total_telecom_and_utility_attacks)
 get_totals_property_damage <- collect(total_property_damage)
-get_totals_property_damage_rev$propextent <- as.character(get_totals_property_damage_rev$propextent)
-get_totals_property_damage_rev$propvalue <- as.integer64(get_totals_property_damage_rev$propextent)
-get_totals_property_damage_rev$propextent <- trimws(get_totals_property_damage_rev$propextent)
-get_totals_property_damage_rev$PropertyDamageText <- trimws(get_totals_property_damage_rev$PropertyDamageText)
 get_totals_property_damage_rev <- get_totals_property_damage %>%
   #mutate(
     #PropertyDamage = if_else(propvalue == "", NA_character_, as.character(propvalue))
