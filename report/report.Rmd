@@ -2,7 +2,7 @@
 title: "What the SAAS?"
 author: "Jordan Kassof and Jeff Weltman"
 date: "4/8/2018"
-output: html_document
+output: word_document
 ---
 
 ## Introduction
