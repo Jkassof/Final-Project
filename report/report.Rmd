@@ -48,11 +48,37 @@ These three visualizations demonstrate some of the capabilities offered through 
 
 ### AWS Application Infrastructure
 
-Some screenshots and comments about actually putting everything together. Including some more detailed commentary about the networking and security side of stuff.
+It was our experience that when building out AWS infrastructure, it is helpful to a) have a complete plan from the start and b) focus on building from the outside in -- setting up "containers", then filling those containers with the correct pieces. For this project, we started by making our VPC, the large "container" that everything will be in. Next, we make four subnets, two that will house app servers and two that will house backend databases. 
+
+```{r fig.cap="AWS Subnets"}
+knitr::include_graphics("img/subnets.png")
+```
+
+We place each pair of subnets in different availability zones so that if an AWS availability zone is having problems, our application can still run off the other zone.
+
+Next, we set up our two app servers, placing them into the subnet 'containers' we just made.
+
+```{r fig.cap="EC2 App Servers"}
+knitr::include_graphics("img/app-servers.png")
+```
+
+Since we want the application to be available through normal web browsers, we need to set up a security group that allows http/https access to the servers on ports 80 and 443. Shiny hosts applications on 8787 and 3838 so those are open as well. We are also temporarily allowing SSH access into the server which will allow us to configure the servers and deploy the application.
+
+```{r fig.cap="Security Groups for App Servers"}
+knitr::include_graphics("img/security-groups.png")
+```
+
+Finally, we set up the RDS database backend using a MySQL instance. This database and one like it go into the remaining two subnets.
+
+```{r fig.cap="Database Backend"}
+knitr::include_graphics("img/backend.png")
+```
+
+And that's it! We now have a functional (albeit empty) cloud infrastructure that fascillates hosting an application with a database backend. Next step will be setting up the app servers and deploying the application.
 
 ### Data & Application
 
-Some screenshots and commentary about the application.
+
 
 ## Further development
 
