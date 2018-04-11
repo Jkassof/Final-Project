@@ -50,7 +50,7 @@ These three visualizations demonstrate some of the capabilities offered through 
 
 It was our experience that when building out AWS infrastructure, it is helpful to a) have a complete plan from the start and b) focus on building from the outside in -- setting up "containers", then filling those containers with the correct pieces. For this project, we started by making our VPC, the large "container" that everything will be in. Next, we make four subnets, two that will house app servers and two that will house backend databases. 
 
-```{r fig.cap="AWS Subnets"}
+```{r fig.cap="AWS Subnets", echo=FALSE}
 knitr::include_graphics("img/subnets.png")
 ```
 
@@ -58,19 +58,19 @@ We place each pair of subnets in different availability zones so that if an AWS 
 
 Next, we set up our two app servers, placing them into the subnet 'containers' we just made.
 
-```{r fig.cap="EC2 App Servers"}
+```{r fig.cap="EC2 App Servers", echo=FALSE}
 knitr::include_graphics("img/app-servers.png")
 ```
 
-Since we want the application to be available through normal web browsers, we need to set up a security group that allows http/https access to the servers on ports 80 and 443. Shiny hosts applications on 8787 and 3838 so those are open as well. We are also temporarily allowing SSH access into the server which will allow us to configure the servers and deploy the application.
+Since we want the application to be available through normal web browsers, we need to set up a security group that allows http/https access to the servers on ports 80 and 443. Shiny hosts applications on 8787 and 3838 so those are open as well. We are also temporarily giving SSH access into the server which will allow us to configure the servers and deploy the application.
 
-```{r fig.cap="Security Groups for App Servers"}
+```{r fig.cap="Security Groups for App Servers", echo=FALSE}
 knitr::include_graphics("img/security-groups.png")
 ```
 
 Finally, we set up the RDS database backend using a MySQL instance. This database and one like it go into the remaining two subnets.
 
-```{r fig.cap="Database Backend"}
+```{r fig.cap="Database Backend", echo=FALSE}
 knitr::include_graphics("img/backend.png")
 ```
 
@@ -78,6 +78,7 @@ And that's it! We now have a functional (albeit empty) cloud infrastructure that
 
 ### Data & Application
 
+The Global Terrorism Data was loaded into RDS using a few lines of R code. After the data was in the backend database, we needed to configure the app servers. This configuration includes installing R and Shiny Server, then deploying the Shiny application to the EC2 instance. The R and Shiny Server installation steps are outlined in the online documentation(see ref 2). Deploying the application to the cloud app servers was done using the **scp** command line utility outlined in AWS's documentation (see ref 1). Below we can see the live application being hosted at the IP address provided by AWS.
 
 
 ## Further development
@@ -86,3 +87,12 @@ Due to the rich development history and active user community, any R-based appli
 
 First, with the capabilities of surfacing and visualizing potentially sensitive data, one opportunity for further development would be to implement authentication. RStudio's Shiny Pro Server includes out-of-the-box support for Goggle authentication, PAM (Pluggable Authentication Module), Kerberos, and LDAP. One or more of these options should integrate with any client's existing authentication infrastructure and would allow for clients to then authenticate in order to access data which is defined as permitted and appropriate. Secondly, since R supports a wide variety of endpoint connectors, this provides robust extinsibility in that data from other client systems can be ingested and accessed for highly customizable reports and analytics. This includes additional database environments, flat files, and third-party services. Lastly, client systems could be configured to automatically populate available data points in a templatized fashion. This could provide a way to facilitate self-service delivery of reporting and visualization.
 
+## References
+
+[1. AWS Accessing your Linux Instance with SSH](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html)
+
+[2. R and Shiny Server Install Directions](https://www.rstudio.com/products/shiny/download-server/)
+
+[3. Shiny Server Administration Guide](http://docs.rstudio.com/shiny-server/)
+
+[4. Leaflet for R](https://rstudio.github.io/leaflet/)
