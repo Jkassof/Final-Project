@@ -2,12 +2,12 @@
 title: "What the SAAS?"
 author: "Jordan Kassof and Jeff Weltman"
 date: "4/8/2018"
-output: html_document
+output: word_document
 ---
 
 ## Introduction
 
-Software as a service (SAAS) is a business model that has become very familiar to most people. Many of the interactions we have with some of the most popular corporations is through a SAAS business model. Whether its for entertainment (Netflix/Hulu/AmazonPrime), socialization (Facebook/Twitter/Snapchat), financial management (Mint/Betterment), more and more firms are looking to deliver their products/services through a SAAS model.
+Software as a service (SAAS) is a business model that has become very familiar to most people. Many of the interactions we have with some of the most popular corporations is through a SAAS business model. Whether it's for entertainment (Netflix/Hulu/AmazonPrime), socialization (Facebook/Twitter/Snapchat), or financial management (Mint/Betterment), more and more firms are looking to deliver their products/services through a SAAS model.
 
 All that being said, what is a SAAS? It's such a buzzword today, but do most regular folks really get what that means? To better understand the nature of this increasingly common arrangement, we seek to implement a small application that leverages some of the key technological components of a SAAS.
 
@@ -22,7 +22,7 @@ While there are many cloud service providers, Amazon has by far the most service
 
 ### Data
 
-The Global Terrorism Database - hereafter referred to as GTD - is an open-source database of domestic, transnational, and international terrorist incidents. This database contains credibly sourced information regarding over 170,000 terrorist incidents from 1970 through 2016. For recent incidents, this data includes 135 quantitative and categorical variables describing all manner of information regarding the incident itself. These points include information regarding the weapons used, number of fatalities, amount of property damage involved, and whether any organization or individual(s) claimed credit for the incident. The majority of these cases are bombings, assassinations, and kidnappings. The GTD is maintained by the University of Maryland's *National Consortium for the Study of Terrorism and Responses to Terrorism (START).* START makes the data available both to government representatives and any interested parties.
+The Global Terrorism Database - hereafter referred to as GTD - is an open-source database of domestic, transnational, and international terrorist incidents. This database contains credibly-sourced information regarding over 170,000 terrorist incidents from 1970 through 2016. For recent incidents, this data includes 135 quantitative and categorical variables describing all manner of information regarding the incident itself. These points include information regarding the weapons used, number of fatalities, amount of property damage involved, and whether any organization or individual(s) claimed credit for the incident. The majority of these cases are bombings, assassinations, and kidnappings. The GTD is maintained by the University of Maryland's *National Consortium for the Study of Terrorism and Responses to Terrorism (START).* START makes the data available both to government representatives and any interested parties.
 
 We opted to filter the data to only consider those incidents which were both confirmed acts of terrorism and were successfully executed. Furthermore, for data visualization, we excluded those events which did not have latitude and longitude coordinates. This brought the number of incidents examined down from over 170,000 to roughly 113,000. Thus the app detailed below demonstrates visualization methods for displaying confirmed and successful terrorist incidents for which precise geographical information was available.
 
@@ -30,16 +30,16 @@ We opted to filter the data to only consider those incidents which were both con
 
 **Shiny** is an R package for building interactive web apps from within RStudio. These apps can be embedded in R Markdown documents, hosted as standalone apps on a webpage, or built as dashboards. In addition, they can be extended with JavaScript, CSS themes, and htmlwidgets. Many R packages are developed both for local use and integration with Shiny for interactivity. As the GTD data subset we used contained latitude and longitude coordinates, a mapping package was a logical and appropriate choice. 
 
-We chose **Leaflet**, an R wrapper for the widely-used JavaScript library of the same name. Leaflet allows for highly-customizable map widgets with parameters for the widget itself and the user interface. Some of the many functions of Leaflet include chloropleths, GeoJSON and TopJSON maps, multi-layered maps, projections, and - with the addition of the **leaflet.extras** package - heatmaps. Many of these functions support markers and circle markers as ways to provide both interactivity and a richer source of detailed information to the end user. Additionally, through the use of database connecting R packages, such as DBI, Leaflet can visualize data hosted externally, such as in the present example of an AWS-hosted RDS instance.
+We chose **Leaflet**, an R wrapper for the widely-used JavaScript library of the same name. Leaflet allows for highly-customizable map widgets with parameters for the widget itself and the user interface. Some of the many functions of Leaflet include chloropleths, GeoJSON and TopoJSON maps, multi-layered maps, projections, and - with the addition of the **leaflet.extras** package - heatmaps. Many of these functions support markers and circle markers as ways to provide both interactivity and a richer source of detailed information to the end user. Additionally, through the use of database connecting R packages such as DBI, Leaflet can visualize data hosted externally, such as in the present example of an AWS-hosted RDS instance.
 
 For the present project, we opted to include three separate Leaflet visualizations in our Shiny web app. Upon launching the app, the end user is presented with a world map devoid of any markers or data. The *Please select a dataset* dropdown menu presents three choices:
 
 1. *Total Successful Incidents* - a heatmap of all 113,000 successful and confirmed terrorist incidents, grouped by latitude and longitude coordinates.
 2. *Total Incidents By Decade* - a heatmap of successful and confirmed terrorist incidents, grouped by both decade and coordinates. 
   + Selecting this dataset shows an otherwise-hidden secondary dropdown menu for decade selection.
-  + By default, the heatmap will show incidents form the 1970s.
+  + By default, the heatmap will show incidents from the 1970s.
 3. *Incidents With Excessive Property Damage* - a map of successful and confirmed terrorist incidents which resulted in at least $1,000,000 of property damage.
-  + These incidents are identified via clustered map markers. Upon mouseover, the geographical bounds of the clustered region is indicated.
+  + These incidents are identified via clustered map markers. Upon mouseover, the geographical bounds of the clustered region are indicated.
   + Clicking on an individual marker displays a popup which provides information regarding the incident, perpetrator, and estimated damage.
 
 These three visualizations demonstrate some of the capabilities offered through Shiny and Leaflet avaiable in a SAAS offering. Locally and remotely-hosted data can be transformed in R and then elegantly displayed to provide interactive and actionable visualization utilizing Shiny and Leaflet.
@@ -48,7 +48,7 @@ These three visualizations demonstrate some of the capabilities offered through 
 
 ### AWS Application Infrastructure
 
-It was our experience that when building out AWS infrastructure, it is helpful to a) have a complete plan from the start and b) focus on building from the outside in -- setting up "containers", then filling those containers with the correct pieces. For this project, we started by making our VPC, the large "container" that everything will be in. Next, we make four subnets, two that will house app servers and two that will house backend databases. 
+It was our experience that when building out AWS infrastructure, it is helpful to a) have a complete plan from the start and b) focus on building from the outside in -- setting up "containers", then filling those containers with the correct pieces. For this project, we started by making our VPC, the large "container" that everything will be in. Next, we make four subnets: two that will house app servers and two that will house backend databases. 
 
 ```{r fig.cap="AWS Subnets", echo=FALSE, fig.align='center'}
 knitr::include_graphics("img/subnets.png")
@@ -74,11 +74,11 @@ Finally, we set up the RDS database backend using a MySQL instance. This databas
 knitr::include_graphics("img/backend.png")
 ```
 
-And that's it! We now have a functional (albeit empty) cloud infrastructure that fascillates hosting an application with a database backend. Next step will be setting up the app servers and deploying the application.
+And that's it! We now have a functional (albeit empty) cloud infrastructure that facilitates hosting an application with a database backend. Next step will be setting up the app servers and deploying the application.
 
 ### Data & Application
 
-The Global Terrorism Data was loaded into RDS using a few lines of R code. After the data was in the backend database, we needed to configure the app servers. This configuration includes installing R and Shiny Server, then deploying the Shiny application to the EC2 instance. The R and Shiny Server installation steps are outlined in the online documentation(see ref 2). Deploying the application to the cloud app servers was done using the **scp** command line utility outlined in AWS's documentation (see ref 1). Below we can see the live application being hosted at the IP address provided by AWS.
+The Global Terrorism Data was loaded into RDS using a few lines of R code. After the data was in the backend database, we needed to configure the app servers. This configuration includes installing R and Shiny Server, then deploying the Shiny application to the EC2 instance. The R and Shiny Server installation steps are outlined in the online documentation (see ref 2). Deploying the application to the cloud app servers was done using the **scp** command line utility outlined in AWS's documentation (see ref 1). Below we can see the live application being hosted at the IP address provided by AWS.
 
 ```{r echo=FALSE, fig.align='center', fig.align='center'}
 knitr::include_graphics('img/app.png')
@@ -88,7 +88,7 @@ knitr::include_graphics('img/app.png')
 
 Due to the rich development history and active user community, any R-based application has an innumerable number of possibilities when it comes to future development. We have included the following three ways which are particularly relevant for this particular application.
 
-First, with the capabilities of surfacing and visualizing potentially sensitive data, one opportunity for further development would be to implement authentication. RStudio's Shiny Pro Server includes out-of-the-box support for Goggle authentication, PAM (Pluggable Authentication Module), Kerberos, and LDAP. One or more of these options should integrate with any client's existing authentication infrastructure and would allow for clients to then authenticate in order to access data which is defined as permitted and appropriate. Secondly, since R supports a wide variety of endpoint connectors, this provides robust extinsibility in that data from other client systems can be ingested and accessed for highly customizable reports and analytics. This includes additional database environments, flat files, and third-party services. Lastly, client systems could be configured to automatically populate available data points in a templatized fashion. This could provide a way to facilitate self-service delivery of reporting and visualization.
+First, with the capabilities of surfacing and visualizing potentially sensitive data, one opportunity for further development would be to implement authentication. RStudio's Shiny Pro Server includes out-of-the-box support for Google authentication, PAM (Pluggable Authentication Module), Kerberos, and LDAP. One or more of these options should integrate with any client's existing authentication infrastructure and would allow for clients to then authenticate in order to access only that data which complies with the organization's definition for the user or group. Secondly, since R supports a wide variety of endpoint connectors, this provides robust extensibility in that data from other client systems can be ingested and accessed for highly customizable reports and analytics. This includes additional database environments, flat files, and third-party services. Lastly, client systems could be configured to automatically populate available data points in a templatized fashion. This could provide a way to facilitate self-service delivery of reporting and visualization.
 
 ## References
 

@@ -4,8 +4,8 @@ vars <- c(
   "(Please Select a Dataset)" = "NoneSelected",
   "Total Successful Incidents" = "LocationTotal",
   "Total Incidents By Decade" = "TotalSuccessfulIncidents_Decade",
-  "Incidents With Extensive Property Damage" = "PropertyDamageText",
-  "Custom Mapping" = "CustomMapping"
+  "Incidents With Extensive Property Damage" = "PropertyDamageText"
+  #"Custom Mapping" = "CustomMapping"
 )
 
 decades <- c(
